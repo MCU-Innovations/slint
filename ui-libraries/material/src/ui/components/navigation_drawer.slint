@@ -13,7 +13,7 @@ import { MaterialStyleMetrics } from "../styling/material_style_metrics.slint";
 import { MaterialAnimations } from "../styling/material_animations.slint";
 import { BaseNavigationItemTemplate } from "./base_navigation.slint";
 
-component NavigationItemTemplate inherits BaseNavigationItemTemplate {
+export component NavigationItemTemplate inherits BaseNavigationItemTemplate {
     property <bool> has_icon: root.icon.width > 0 && root.icon.height > 0;
     property <bool> has_selected_icon: root.selected_icon.width > 0 || root.selected_icon.height > 0;
     property <color> color: MaterialPalette.on_surface_variant;

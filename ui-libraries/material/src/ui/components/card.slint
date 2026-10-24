@@ -37,6 +37,7 @@ component BaseCard {
         border_radius: background_layer.border_radius;
         visible: root.clickable;
         enabled: root.visible;
+        mouse-cursor: root.clickable ? pointer : default;
 
         clicked => {
             root.clicked();
