@@ -18,6 +18,11 @@ export component FloatingActionButton {
     in property <string> text <=> base.text;
     in property <string> tooltip <=> base.tooltip;
     in property <FABStyle> style;
+    in property <length> icon_size: root.style == FABStyle.small
+        ? MaterialStyleMetrics.icon_size_18
+        : root.style == FABStyle.large
+            ? MaterialStyleMetrics.icon_size_36
+            : MaterialStyleMetrics.icon_size_24;
 
     callback clicked <=> base.clicked;
 
@@ -44,7 +49,7 @@ export component FloatingActionButton {
         min_layout_width: self.min_layout_height;
         min_layout_height: root.style == FABStyle.small ? MaterialStyleMetrics.size_40 :
             root.style == FABStyle.standard ? MaterialStyleMetrics.size_56 : MaterialStyleMetrics.size_90;
-        icon_size: root.style != FABStyle.large ? MaterialStyleMetrics.icon_size_24 : MaterialStyleMetrics.icon_size_36;
+        icon_size: root.icon_size;
     }
 
     states [

@@ -34,6 +34,7 @@ component BaseTabItemTemplate inherits BaseNavigationItemTemplate {
 }
 
 component TabItemTemplate inherits BaseTabItemTemplate {
+    in property <bool> wrap_label;
     indicator_width: label.width;
 
     property <bool> has_selected_icon: root.selected_icon.width > 0 || root.selected_icon.height > 0;
@@ -65,9 +66,13 @@ component TabItemTemplate inherits BaseTabItemTemplate {
                 alignment: center;
 
                 label := MaterialText {
+                    width: root.wrap_label ? root.width - 16px : root.width;
                     text: root.text;
                     style: MaterialTypography.title_small;
                     color: MaterialPalette.on_surface_variant;
+                    horizontal_alignment: center;
+                    wrap: root.wrap_label ? word-wrap : no-wrap;
+                    overflow: root.wrap_label ? clip : elide;
                 }
             }
         }
@@ -133,13 +138,14 @@ component SecondaryTabItemTemplate inherits BaseTabItemTemplate {
 component BaseTabBar inherits BaseNavigation {
     in property <length> indicator_height;
     in property <length> indicator_radius;
+    in property <color> bar_background: MaterialPalette.surface;
     private property <length> indicator_x;
     private property <length> indicator_width;
 
     min_height: max(MaterialStyleMetrics.size_49, layout.min_height);
 
     Rectangle {
-        background: MaterialPalette.surface;
+        background: root.bar_background;
 
         layout := HorizontalLayout {
             @children
@@ -177,10 +183,16 @@ component BaseTabBar inherits BaseNavigation {
 }
 
 export component TabBar inherits BaseTabBar {
+    in property <bool> wrap_labels: false;
+    private property <length> item_width: root.width / root.items.length;
+
     indicator_height: MaterialStyleMetrics.size_3;
     indicator_radius: root.indicator_height / 2;
 
     for item[index] in root.items : TabItemTemplate {
+        width: root.item_width;
+        height: 100%;
+        wrap_label: root.wrap_labels;
         icon: item.icon;
         selected_icon: item.selected_icon;
         text: item.text;

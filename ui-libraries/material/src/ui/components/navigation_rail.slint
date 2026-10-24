@@ -11,9 +11,18 @@ import { NavigationItemTemplate } from "navigation_bar.slint";
 import { BaseNavigation } from "./base_navigation.slint";
 
 export component NavigationRail inherits BaseNavigation {
+    in property <color> background: MaterialPalette.surface;
     in property <bool> has_menu;
     in property <image> fab_icon;
     in property <LayoutAlignment> alignment;
+    // Allows applications to tune the distance between destinations while
+    // retaining the Material rail item template and touch targets.
+    in property <length> item_spacing: MaterialStyleMetrics.spacing_4;
+    // Optional proportional regions place the destination group within the
+    // available rail height without relying on fixed padding values.
+    in property <float> content_top_stretch: 0;
+    in property <float> content_middle_stretch: 1;
+    in property <float> content_bottom_stretch: 0;
 
     callback menu_clicked();
     callback fab_clicked();
@@ -21,11 +30,9 @@ export component NavigationRail inherits BaseNavigation {
     min_width: max(MaterialStyleMetrics.size_80, layout.min_width);
 
     Rectangle {
-        background: MaterialPalette.surface;
+        background: root.background;
 
         layout := VerticalLayout {
-            padding_top: MaterialStyleMetrics.padding_44;
-            padding_bottom: MaterialStyleMetrics.padding_56;
             spacing: MaterialStyleMetrics.spacing_4;
 
             if root.has_menu : IconButton {
@@ -55,12 +62,17 @@ export component NavigationRail inherits BaseNavigation {
                 horizontal_stretch: 1;
             }
 
+            if root.content_top_stretch > 0 : Rectangle {
+                vertical_stretch: root.content_top_stretch;
+            }
+
             HorizontalLayout {
-                vertical_stretch: 1;
+                vertical_stretch: root.content_middle_stretch;
                 alignment: center;
 
                 VerticalLayout {
                     alignment: root.alignment;
+                    spacing: root.item_spacing;
 
                     for item[index] in root.items : NavigationItemTemplate {
                         icon: item.icon;
@@ -70,6 +82,7 @@ export component NavigationRail inherits BaseNavigation {
                         selected: index == root.current_index;
                         show_badge: item.show_badge;
                         badge: item.badge;
+                        badge_success: item.badge_success;
                         navitem_padding_top: 0;
                         navitem_padding_bottom: MaterialStyleMetrics.padding_4;
 
@@ -78,6 +91,10 @@ export component NavigationRail inherits BaseNavigation {
                         }
                     }
                 }
+            }
+
+            if root.content_bottom_stretch > 0 : Rectangle {
+                vertical_stretch: root.content_bottom_stretch;
             }
         }
     }

@@ -34,7 +34,7 @@ export component CircularProgressIndicator {
     in property <float> progress;
     in property <bool> indeterminate;
 
-    property <length> bar_height: MaterialStyleMetrics.size_4;
+    in property <length> bar_height: MaterialStyleMetrics.size_4;
 
     accessible-role: progress-indicator;
     accessible-value: !root.indeterminate ? root.progress : "";

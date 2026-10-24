@@ -15,7 +15,7 @@ import { BaseNavigationItemTemplate, BaseNavigation } from "./base_navigation.sl
 export component NavigationItemTemplate inherits BaseNavigationItemTemplate {
     property <bool> has_icon: root.icon.width > 0 && root.icon.height > 0;
     property <bool> has_selected_icon: root.selected_icon.width > 0 || root.selected_icon.height > 0;
-    property <color> color: MaterialPalette.on_surface;
+    property <color> color: MaterialPalette.on_surface_variant;
 
     in property <length> navitem_padding_top: MaterialStyleMetrics.padding_12;
     in property <length> navitem_padding_bottom: MaterialStyleMetrics.padding_16;
@@ -94,6 +94,7 @@ export component NavigationItemTemplate inherits BaseNavigationItemTemplate {
                             x: parent.width / 2;
                             y: 0;
                             text: root.badge;
+                            success: root.badge_success;
                         }
                     }
                 }
@@ -114,18 +115,19 @@ export component NavigationItemTemplate inherits BaseNavigationItemTemplate {
 
     states [
         selected when root.selected : {
+            root.color: MaterialPalette.on_secondary_container;
             background_layer.background: MaterialPalette.secondary_container;
             state_layer.background: transparent;
-            label.style: MaterialTypography.label_medium_prominent;
         }
     ]
 }
 
 export component NavigationBar inherits BaseNavigation {
+    in property <color> background: MaterialPalette.surface_container;
     min_height: max(MaterialStyleMetrics.size_80, layout.min_height);
 
     Rectangle {
-        background: MaterialPalette.surface_container;
+        background: root.background;
 
         layout := HorizontalLayout {
             padding_left: MaterialStyleMetrics.padding_8;
@@ -140,6 +142,7 @@ export component NavigationBar inherits BaseNavigation {
                 selected: index == root.current_index;
                 show_badge: item.show_badge;
                 badge: item.badge;
+                badge_success: item.badge_success;
 
                 clicked => {
                     root.select(index);
