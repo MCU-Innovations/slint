@@ -259,6 +259,9 @@ fn window_is_resizable(
 #[allow(clippy::large_enum_variant)]
 enum WinitWindowOrNone {
     HasWindow {
+        // Revoke OLE registration before releasing the native window.
+        #[cfg(target_os = "windows")]
+        _drop_target: crate::windows_drop_target::DropTargetRegistration,
         window: Arc<winit::window::Window>,
         frame_throttle: Box<dyn crate::frame_throttle::FrameThrottle>,
         #[cfg(enable_accesskit)]
@@ -685,8 +688,21 @@ impl WinitWindowAdapter {
             window_attributes.inner_size = Some(preferred_size.into());
         }
 
+        #[cfg(target_os = "windows")]
+        {
+            use winit::platform::windows::WindowAttributesExtWindows;
+            // Winit 0.30 passes POINTL by pointer in its drop callbacks, corrupting
+            // the 32-bit ABI. Slint registers its own typed COM target below.
+            window_attributes = window_attributes.with_drag_and_drop(false);
+        }
+
         let winit_window =
             self.renderer.resume(active_event_loop, window_attributes, self.self_weak.clone())?;
+        #[cfg(target_os = "windows")]
+        let drop_target = crate::windows_drop_target::DropTargetRegistration::new(
+            &winit_window,
+            self.self_weak.clone(),
+        )?;
         self.first_frame_presented.set(false);
 
         // Push the host shell's color scheme and accent color to the SlintContext.
@@ -747,6 +763,8 @@ impl WinitWindowAdapter {
         );
 
         *self.winit_window_or_none.borrow_mut() = WinitWindowOrNone::HasWindow {
+            #[cfg(target_os = "windows")]
+            _drop_target: drop_target,
             window: winit_window.clone(),
             frame_throttle,
             #[cfg(enable_accesskit)]

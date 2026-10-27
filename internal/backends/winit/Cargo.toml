@@ -165,7 +165,8 @@ objc2-quartz-core = { version = "0.3.2", default-features = false, features = ["
 block2 = "0.6.2"
 
 [target.'cfg(target_os = "windows")'.dependencies]
-windows = { workspace = true, features = ["Win32_UI_Input_KeyboardAndMouse", "Win32_UI_WindowsAndMessaging", "Win32_UI_HiDpi", "Win32_Graphics_Gdi", "Win32_Graphics_Dwm"] }
+windows = { workspace = true, features = ["Win32_UI_Input_KeyboardAndMouse", "Win32_UI_WindowsAndMessaging", "Win32_UI_HiDpi", "Win32_Graphics_Gdi", "Win32_Graphics_Dwm", "Win32_System_Com", "Win32_System_Com_StructuredStorage", "Win32_System_Ole", "Win32_System_SystemServices", "Win32_UI_Shell"] }
+windows-core = { workspace = true }
 arboard = { version = "3.6", default-features = false }
 
 [build-dependencies]
@@ -198,3 +199,8 @@ harness = false
 name = "initial_window_icon"
 harness = false
 required-features = ["x11", "renderer-software"]
+
+[[test]]
+name = "windows_file_drop"
+harness = false
+required-features = ["renderer-software"]

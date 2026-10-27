@@ -50,8 +50,7 @@ export component ExtendedTouchArea inherits TouchArea {
 
     @children
 
-    if root.tooltip != "" && root.has-hover && !root.pressed : ToolTip {
-        y: root.tooltip_offset;
-        text: root.tooltip;
+    if root.tooltip != "" && root.enabled && !root.pressed : Tooltip {
+        ToolTip { text: root.tooltip; }
     }
 }
