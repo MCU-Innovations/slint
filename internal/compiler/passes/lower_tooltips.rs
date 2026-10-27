@@ -97,6 +97,9 @@ fn build_tooltip_content(
     tooltip_text: Option<NamedReference>,
     children: Vec<ElementRc>,
 ) -> ElementRc {
+    if tooltip_text.is_none() {
+        return children.into_iter().next().expect("custom tooltip has one root child");
+    }
     let mut bindings = std::collections::BTreeMap::new();
     if let Some(tooltip_text) = tooltip_text {
         bindings.insert(
@@ -149,6 +152,11 @@ fn bind_popup_effective_size_from_content(
             Expression::PropertyReference(preferred_height).into();
         height_binding.priority = 1;
         popup_window_rc.borrow_mut().set_binding(SmolStr::new_static(HEIGHT), height_binding);
+    }
+    // Popup geometry is recalculated from layout preferences when it opens.
+    for (size, preferred) in [(WIDTH, "preferred-width"), (HEIGHT, "preferred-height")] {
+        let binding = popup_window_rc.borrow().binding(size).unwrap().clone();
+        popup_window_rc.borrow_mut().set_binding(SmolStr::new(preferred), binding);
     }
 }
 

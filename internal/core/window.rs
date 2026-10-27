@@ -537,7 +537,7 @@ pub struct PopupWindow {
     focus_item_in_parent: ItemWeak,
     /// The item from where the Popup was invoked from
     pub parent_item: ItemWeak,
-    /// Overlay tooltip: no focus steal, unclamped placement, skipped in main mouse routing.
+    /// Overlay tooltip: no focus steal, skipped in main mouse routing.
     /// Context / popup menu: participates in menu-chain hit testing and cascading close.
     pub window_kind: WindowKind,
     /// Callback that returns the current desired logical position of the popup.
@@ -2261,7 +2261,6 @@ impl WindowInner {
         // because we weren't able to create a dedicated popup adapter (for example if the backend does not support it).
         let (location, properties_tracker) =
             if Rc::ptr_eq(&parent_window_adapter, &popup_window_adapter) {
-                // Tooltips may extend past the window (e.g. above/left of the anchor); do not clamp.
                 let clip_region = Some(LogicalRect::new(
                     LogicalPoint::new(0.0 as crate::Coord, 0.0 as crate::Coord),
                     self.window_adapter().size().to_logical(self.scale_factor()).to_euclid(),
@@ -2562,6 +2561,11 @@ impl WindowInner {
         }
         for overlay in self.overlays.borrow().iter() {
             Self::set_item_tree_window_geometry(overlay, size);
+        }
+        let popup_ids =
+            self.active_popups.borrow().iter().map(|popup| popup.popup_id).collect::<Vec<_>>();
+        for popup_id in popup_ids {
+            self.update_popup_properties(popup_id);
         }
     }
 

@@ -3337,6 +3337,7 @@ dependencies = [
  "web-sys",
  "webbrowser",
  "windows",
+ "windows-core",
  "winit",
  "x11rb",
  "zbus",
